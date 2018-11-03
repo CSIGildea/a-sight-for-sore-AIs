@@ -1,14 +1,11 @@
 import face_recognition
 import cv2
-from bitarray import bitarray
 import math
 import csv
 from multiprocessing import Pool
 from multiprocessing import Array
-from multiprocessing.dummy import Pool as ThreadPool
-from multiprocessing import Process, Queue
-import random, time, difflib
-from random import shuffle
+import time
+
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -40,6 +37,8 @@ def getFrame(sec):
     return ret
 
 def checkFace(frame):
+    if arr[frame[1]] == 1 :
+        return
     # Find all the faces and face encodings in the current frame of video
     #face_locations = face_recognition.face_locations(rgb_small_frame)
     face_encodings = []
@@ -66,9 +65,6 @@ print('number of frames = ' + str(frameCount))
 print('duration (S) = ' + str(duration))
 duration = int(round(duration))
 print(duration)
-
-bitset = bitarray(duration+1)
-bitset.setall(False)
 
 t = time.time()
 frameRate = 0.25
@@ -100,7 +96,6 @@ with open("answers.csv", "wb") as csvfile:
 
 print time.time()-t
 print("Done...")
-print(arr)
 
 
 # Release handle to the webcam
