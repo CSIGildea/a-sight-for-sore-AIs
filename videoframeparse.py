@@ -7,7 +7,6 @@ def getFrame(sec):
     hasFrames,image = vidcap.read()
     if hasFrames:
 	gray_img = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-	cv2.imshow('window-name',gray_img)
 	faces = face_csc.detectMultiScale(gray_img, 1.1, 4)
     
     	for (x, y, w, h) in faces:
