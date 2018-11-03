@@ -21,6 +21,9 @@ from random import shuffle
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture('5050_trailer.mp4')
 frames = []
+# Load a sample picture and learn how to recognize it.
+known_image = face_recognition.load_image_file("test_joseph.jpg")
+known_face_encoding = face_recognition.face_encodings(known_image)[0]
 
 def getFrame(sec):
     video_capture.set(cv2.CAP_PROP_POS_MSEC,sec*1000)
@@ -30,7 +33,6 @@ def getFrame(sec):
     if ret:
         # Resize frame of video to 1/4 size for faster face recognition processing
         small_fr = cv2.resize(fr, (0, 0), fx=0.25, fy=0.25)
-
         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
         rgb_small_frame = small_fr[:, :, ::-1]
         frames.append([rgb_small_frame,int(math.ceil(sec))])
@@ -45,9 +47,6 @@ def checkFace(frame):
     face_encodings = face_recognition.face_encodings(frame[0])
 
     for face_encoding in face_encodings:
-        # Load a sample picture and learn how to recognize it.
-        known_image = face_recognition.load_image_file("test_joseph.jpg")
-        known_face_encoding = face_recognition.face_encodings(known_image)[0]
         # See if the face is a match for the known face(s)
         matches = face_recognition.compare_faces([known_face_encoding], face_encoding)
         # If a match was found in known_face_encodings, just use the first one.
