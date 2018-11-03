@@ -7,6 +7,7 @@ from multiprocessing import Pool
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import Process, Queue
 import random, time, difflib
+from random import shuffle
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -80,17 +81,13 @@ while sec<(duration+1):
     sec = sec + frameRate
     sec = round(sec, 2)
 
-#import pdb; pdb.set_trace()
-print("Threading...")
-for frame in frames:
-    p = Process(target=checkFace, args=(frame,))
-    p.Daemon = True
-    p.start()
-for  i in range(len(frames)):
-    p.join()
+pool = Pool()
+pool.map(checkFace,frames)
+#close the pool and wait for the work to finish
+pool.close()
+pool.join()
 print time.time()-t
 print("Done...")
-#close the pool and wait for the work to finish
 
 
 # Release handle to the webcam
