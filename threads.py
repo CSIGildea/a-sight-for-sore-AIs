@@ -4,6 +4,7 @@ from bitarray import bitarray
 import math
 import csv
 from multiprocessing import Pool
+from multiprocessing import Array
 from multiprocessing.dummy import Pool as ThreadPool
 from multiprocessing import Process, Queue
 import random, time, difflib
@@ -39,8 +40,6 @@ def getFrame(sec):
     return ret
 
 def checkFace(frame):
-    if bitset[frame[1]]:
-        return
     # Find all the faces and face encodings in the current frame of video
     #face_locations = face_recognition.face_locations(rgb_small_frame)
     face_encodings = []
@@ -52,10 +51,12 @@ def checkFace(frame):
         # If a match was found in known_face_encodings, just use the first one.
         if True in matches:
             print("Found: ",frame[1])
-            bitset[frame[1]] = 1
-            return True
+            arr[frame[1]] = 1
+            return frame[1]
 
-
+def init(local_arr):
+    global arr
+    arr = local_arr
 
 fps = video_capture.get(cv2.CAP_PROP_FPS)      # OpenCV2 version 2 used "CV_CAP_PROP_FPS"
 frameCount = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -63,9 +64,9 @@ duration = frameCount/fps
 print('fps = ' + str(fps))
 print('number of frames = ' + str(frameCount))
 print('duration (S) = ' + str(duration))
-
 duration = int(round(duration))
 print(duration)
+
 bitset = bitarray(duration+1)
 bitset.setall(False)
 
@@ -74,19 +75,32 @@ frameRate = 0.25
 seconds = []
 sec = 0
 while sec<(duration+1):
-    seconds.append(sec)
-    getFrame(sec)
-    print(sec)
-    sec = sec + frameRate
-    sec = round(sec, 2)
+   seconds.append(sec)
+   getFrame(sec)
+   print(sec)
+   sec = sec + frameRate
+   sec = round(sec, 2)
 
-pool = Pool()
-pool.map(checkFace,frames)
+arr = Array('i', range(2,duration+3), lock=False)
+pool = Pool(initializer=init, initargs=(arr,))
+results = pool.map(checkFace,frames)
 #close the pool and wait for the work to finish
 pool.close()
 pool.join()
+
+data = []
+for i in range(len(arr)):
+    if arr[i]!=1:
+        arr[i] = 0
+    data.append([i,arr[i]])
+
+with open("answers.csv", "wb") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerows(data)
+
 print time.time()-t
 print("Done...")
+print(arr)
 
 
 # Release handle to the webcam
