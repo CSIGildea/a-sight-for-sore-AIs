@@ -2,6 +2,7 @@ import face_recognition
 import cv2
 from bitarray import bitarray
 import math
+import csv
 
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -78,6 +79,16 @@ while success:
     sec = sec + frameRate
     sec = round(sec, 2)
     success = getFrame(sec)
+
+print(bitset)
+data = []
+for i in range(len(bitset)):
+    data.append([i+1,int(bitset[i])])
+
+with open("answers.csv", "wb") as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerows(data)
+
 
 # Release handle to the webcam
 video_capture.release()
