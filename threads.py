@@ -2,22 +2,11 @@ import face_recognition
 import cv2
 import math
 import csv
-from multiprocessing import Pool
-from multiprocessing import Array
+from multiprocessing import Pool, Array
 import time
 
-
-# This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
-# other example, but it includes some basic performance tweaks to make things run a lot faster:
-#   1. Process each video frame at 1/4 resolution (though still display it at full resolution)
-#   2. Only detect faces in every other frame of video.
-
-# PLEASE NOTE: This example requires OpenCV (the `cv2` library) to be installed only to read from your webcam.
-# OpenCV is *not* required to use the face_recognition library. It's only required if you want to run this
-# specific demo. If you have trouble installing it, try any of the other demos that don't require it instead.
-
-# Get a reference to webcam #0 (the default one)
-video_capture = cv2.VideoCapture('5050_trailer.mp4')
+# Load video to process
+video_capture = cv2.VideoCapture('video1.mp4')
 frames = []
 # Load a sample picture and learn how to recognize it.
 known_image = face_recognition.load_image_file("test_joseph.jpg")
@@ -37,7 +26,7 @@ def getFrame(sec):
     return ret
 
 def checkFace(frame):
-    if arr[frame[1]] == 1 :
+    if arr[frame[1]]:
         return
     # Find all the faces and face encodings in the current frame of video
     #face_locations = face_recognition.face_locations(rgb_small_frame)
@@ -57,33 +46,35 @@ def init(local_arr):
     global arr
     arr = local_arr
 
+# Get video information. Used to know what second the frame appears in
 fps = video_capture.get(cv2.CAP_PROP_FPS)      # OpenCV2 version 2 used "CV_CAP_PROP_FPS"
 frameCount = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
-duration = frameCount/fps
+duration = int(round(frameCount/fps))
+
 print('fps = ' + str(fps))
 print('number of frames = ' + str(frameCount))
 print('duration (S) = ' + str(duration))
-duration = int(round(duration))
-print(duration)
 
-t = time.time()
+start_time = time.time()
+
 frameRate = 0.25
-seconds = []
 sec = 0
 while sec<(duration+1):
-   seconds.append(sec)
    getFrame(sec)
-   print(sec)
-   sec = sec + frameRate
-   sec = round(sec, 2)
+   if sec % 100 == 0:
+       print(sec)
+   sec = round((sec + frameRate), 2)
 
+# Create the threads to run checkFace
 arr = Array('i', range(2,duration+3), lock=False)
 pool = Pool(initializer=init, initargs=(arr,))
 results = pool.map(checkFace,frames)
-#close the pool and wait for the work to finish
+
+# Close the pool and wait for the work to finish
 pool.close()
 pool.join()
 
+# Write results to answers.csv
 data = []
 for i in range(len(arr)):
     if arr[i]!=1:
@@ -94,9 +85,8 @@ with open("answers.csv", "wb") as csvfile:
     writer = csv.writer(csvfile)
     writer.writerows(data)
 
-print time.time()-t
+print(time.time() - start_time)
 print("Done...")
-
 
 # Release handle to the webcam
 video_capture.release()
