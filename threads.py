@@ -6,7 +6,7 @@ from multiprocessing import Pool, Array
 import time
 
 # Load video to process
-video_capture = cv2.VideoCapture('video1.mp4')
+video_capture = cv2.VideoCapture('5050_trailer.mp4')
 frames = []
 # Load a sample picture and learn how to recognize it.
 known_image = face_recognition.load_image_file("test_joseph.jpg")
@@ -26,7 +26,7 @@ def getFrame(sec):
     return ret
 
 def checkFace(frame):
-    if arr[frame[1]]:
+    if arr[frame[1]] == 1:
         return
     # Find all the faces and face encodings in the current frame of video
     #face_locations = face_recognition.face_locations(rgb_small_frame)
