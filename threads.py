@@ -26,21 +26,24 @@ def getFrame(sec):
     return ret
 
 def checkFace(frame):
-    if arr[frame[1]] == 1:
-        return
-    # Find all the faces and face encodings in the current frame of video
-    #face_locations = face_recognition.face_locations(rgb_small_frame)
-    face_encodings = []
-    face_encodings = face_recognition.face_encodings(frame[0])
+    try:
+        if arr[frame[1]] == 1:
+            return
+        # Find all the faces and face encodings in the current frame of video
+        #face_locations = face_recognition.face_locations(rgb_small_frame)
+        face_encodings = []
+        face_encodings = face_recognition.face_encodings(frame[0])
 
-    for face_encoding in face_encodings:
-        # See if the face is a match for the known face(s)
-        matches = face_recognition.compare_faces([known_face_encoding], face_encoding)
-        # If a match was found in known_face_encodings, just use the first one.
-        if True in matches:
-            print("Found: ",frame[1])
-            arr[frame[1]] = 1
-            return frame[1]
+        for face_encoding in face_encodings:
+            # See if the face is a match for the known face(s)
+            matches = face_recognition.compare_faces([known_face_encoding], face_encoding)
+            # If a match was found in known_face_encodings, just use the first one.
+            if True in matches:
+                print("Found: ",frame[1])
+                arr[frame[1]] = 1
+                return frame[1]
+    except:
+        return
 
 def init(local_arr):
     global arr
