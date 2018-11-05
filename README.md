@@ -25,11 +25,13 @@ Build a program that learns any celebrity's face from one photo and is able to d
 
 ### Output in CSV:
 #### Secs, Boolean - Face did appear
+0,0
+
 1,0
 
 2,0
 
-3,0
+3,1
 
 4,1
 
