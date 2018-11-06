@@ -1,6 +1,6 @@
 # Huawei's Future Of Vision Challenge
 ## Team: A Sight for Sore AIs
-### Third Place Winners - Won Trip to China and Huawei Tablet 😍
+### Third Place Winners - Won a Trip to China and Huawei Tablet each 😍
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/CSIGildea/a-sight-for-sore-AIs/master/huaweilogo.jpg?token=AYSfNaQ4r1MmnC2eeScensh-9Qd9Ty2dks5b6hFZwA%3D%3D"/>
