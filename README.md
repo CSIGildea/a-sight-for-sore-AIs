@@ -43,3 +43,14 @@ Build a program that learns any celebrity's face from one photo and is able to d
 
 ... etc
 
+## Installation and Running:
+
+### To Install
+
+- virtualenv env
+- source env/bin/activate
+- pip install -r requirements.txt
+
+### To Run
+- ./run.sh
+
